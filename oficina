@@ -1,41 +1,75 @@
-import threading
 import queue
+import threading
 import time
 import random
 
-q = queue.Queue()
+# Crear la cola compartida (PriorityQueue)
+q = queue.PriorityQueue()
 
 def empleado(id_empleado):
-    for i in range(1, 6): 
-        doc = f"Doc_{i}_Emp{id_empleado}"
-        print(f"Empleado {id_empleado} enviando: {doc}")
-        q.put(doc)
-        time.sleep(random.uniform(0.1, 0.5)) 
-
-def impresora():
-    while True:
-        documento = q.get() 
-        if documento is None: break 
+    """Productor: Simula a un empleado enviando documentos."""
+    for i in range(5):
+        prioridad = random.randint(1, 3)
+        documento = f"Doc-{i+1} del Empleado-{id_empleado}"
         
-        print(f"Impresora procesando: {documento}")
-        time.sleep(random.uniform(1, 3))
-        print(f"Finalizado: {documento}")
-        q.task_done()
+        q.put((prioridad, documento))
+        print(f"Empleado {id_empleado} envio: {documento} [Prioridad: {prioridad}]")
+        
+        time.sleep(random.uniform(0.5, 1.5))
+
+def impresora(id_impresora):
+    """Consumidor: Simula una impresora procesando la cola."""
+    while True:
+        if random.random() < 0.15:
+            print(f"¡ALERTA! Impresora {id_impresora} atascada o sin papel. Mantenimiento en curso...")
+            time.sleep(4)
+            print(f"Impresora {id_impresora} reparada y lista para continuar.")
+
+        # Extraer el siguiente elemento. Ahora siempre será una tupla.
+        prioridad, documento = q.get()
+        
+        # Condición de salida comprobando el contenido del documento
+        if documento is None:
+            q.task_done() # Marcamos la señal de parada como procesada
+            break
+            
+        print(f"Impresora {id_impresora} imprimiendo: {documento} [Prioridad {prioridad}]")
+        
+        time.sleep(random.uniform(1.0, 3.0))
+        
+        print(f"Impresora {id_impresora} termino: {documento}")
+        q.task_done() 
+
+# --- CONFIGURACION Y LANZAMIENTO ---
+
+num_empleados = 3
+num_impresoras = 2
 
 hilos_empleados = []
-for i in range(1, 4):
-    t = threading.Thread(target=empleado, args=(i,))
+hilos_impresoras = []
+
+# 1. Crear y lanzar hilos de impresoras
+for i in range(num_impresoras):
+    t = threading.Thread(target=impresora, args=(i+1,))
+    hilos_impresoras.append(t)
     t.start()
+
+# 2. Crear y lanzar hilos de empleados
+for i in range(num_empleados):
+    t = threading.Thread(target=empleado, args=(i+1,))
     hilos_empleados.append(t)
+    t.start()
 
-hilo_impresora = threading.Thread(target=impresora)
-hilo_impresora.start()
-
+# 3. Esperar a que todos los empleados terminen
 for t in hilos_empleados:
     t.join()
 
-q.join()
-q.put(None) 
-hilo_impresora.join()
+# 4. Enviar señales de parada en formato tupla (prioridad bajísima, None)
+for _ in range(num_impresoras):
+    q.put((999, None))
 
-print("--- Sistema de impresión finalizado ---")
+# 5. Esperar a que las impresoras terminen su trabajo
+for t in hilos_impresoras:
+    t.join()
+
+print("Todos los documentos han sido procesados. Sistema apagado.")
