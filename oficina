@@ -1,0 +1,41 @@
+import threading
+import queue
+import time
+import random
+
+q = queue.Queue()
+
+def empleado(id_empleado):
+    for i in range(1, 6): 
+        doc = f"Doc_{i}_Emp{id_empleado}"
+        print(f"Empleado {id_empleado} enviando: {doc}")
+        q.put(doc)
+        time.sleep(random.uniform(0.1, 0.5)) 
+
+def impresora():
+    while True:
+        documento = q.get() 
+        if documento is None: break 
+        
+        print(f"Impresora procesando: {documento}")
+        time.sleep(random.uniform(1, 3))
+        print(f"Finalizado: {documento}")
+        q.task_done()
+
+hilos_empleados = []
+for i in range(1, 4):
+    t = threading.Thread(target=empleado, args=(i,))
+    t.start()
+    hilos_empleados.append(t)
+
+hilo_impresora = threading.Thread(target=impresora)
+hilo_impresora.start()
+
+for t in hilos_empleados:
+    t.join()
+
+q.join()
+q.put(None) 
+hilo_impresora.join()
+
+print("--- Sistema de impresión finalizado ---")
