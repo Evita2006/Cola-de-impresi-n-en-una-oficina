@@ -2,9 +2,15 @@ import queue
 import threading
 import time
 import random
+import json
+from datetime import datetime
 
 # Crear la cola compartida (PriorityQueue)
 q = queue.PriorityQueue()
+
+# Lista para guardar el historial y un Lock para protegerla
+registro_impresiones = []
+lock_registro = threading.Lock()
 
 def empleado(id_empleado):
     """Productor: Simula a un empleado enviando documentos."""
@@ -25,12 +31,10 @@ def impresora(id_impresora):
             time.sleep(4)
             print(f"Impresora {id_impresora} reparada y lista para continuar.")
 
-        # Extraer el siguiente elemento. Ahora siempre será una tupla.
         prioridad, documento = q.get()
         
-        # Condición de salida comprobando el contenido del documento
         if documento is None:
-            q.task_done() # Marcamos la señal de parada como procesada
+            q.task_done()
             break
             
         print(f"Impresora {id_impresora} imprimiendo: {documento} [Prioridad {prioridad}]")
@@ -38,7 +42,20 @@ def impresora(id_impresora):
         time.sleep(random.uniform(1.0, 3.0))
         
         print(f"Impresora {id_impresora} termino: {documento}")
-        q.task_done() 
+        
+        # --- MEJORA: Guardar en el registro de forma segura ---
+        hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        with lock_registro: # Bloqueamos el acceso a la lista mientras escribimos
+            registro_impresiones.append({
+                "impresora": f"Impresora-{id_impresora}",
+                "documento": documento,
+                "prioridad": prioridad,
+                "hora_impresion": hora_actual
+            })
+        # ------------------------------------------------------
+        
+        q.task_done()
 
 # --- CONFIGURACION Y LANZAMIENTO ---
 
@@ -48,28 +65,30 @@ num_impresoras = 2
 hilos_empleados = []
 hilos_impresoras = []
 
-# 1. Crear y lanzar hilos de impresoras
 for i in range(num_impresoras):
     t = threading.Thread(target=impresora, args=(i+1,))
     hilos_impresoras.append(t)
     t.start()
 
-# 2. Crear y lanzar hilos de empleados
 for i in range(num_empleados):
     t = threading.Thread(target=empleado, args=(i+1,))
     hilos_empleados.append(t)
     t.start()
 
-# 3. Esperar a que todos los empleados terminen
 for t in hilos_empleados:
     t.join()
 
-# 4. Enviar señales de parada en formato tupla (prioridad bajísima, None)
 for _ in range(num_impresoras):
     q.put((999, None))
 
-# 5. Esperar a que las impresoras terminen su trabajo
 for t in hilos_impresoras:
     t.join()
 
-print("Todos los documentos han sido procesados. Sistema apagado.")
+print("Todos los documentos han sido procesados. Generando archivo JSON...")
+
+# --- MEJORA: Exportar la lista a un archivo JSON ---
+nombre_archivo = "historial_impresiones.json"
+with open(nombre_archivo, "w", encoding="utf-8") as archivo:
+    json.dump(registro_impresiones, archivo, indent=4, ensure_ascii=False)
+
+print(f"Sistema apagado. El registro se ha guardado en '{nombre_archivo}'.")

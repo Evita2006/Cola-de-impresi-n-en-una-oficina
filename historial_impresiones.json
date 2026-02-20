@@ -1,0 +1,92 @@
+[
+    {
+        "impresora": "Impresora-1",
+        "documento": "Doc-1 del Empleado-1",
+        "prioridad": 2,
+        "hora_impresion": "2026-02-20 19:33:17"
+    },
+    {
+        "impresora": "Impresora-2",
+        "documento": "Doc-1 del Empleado-2",
+        "prioridad": 2,
+        "hora_impresion": "2026-02-20 19:33:18"
+    },
+    {
+        "impresora": "Impresora-1",
+        "documento": "Doc-3 del Empleado-2",
+        "prioridad": 1,
+        "hora_impresion": "2026-02-20 19:33:18"
+    },
+    {
+        "impresora": "Impresora-1",
+        "documento": "Doc-2 del Empleado-1",
+        "prioridad": 2,
+        "hora_impresion": "2026-02-20 19:33:20"
+    },
+    {
+        "impresora": "Impresora-2",
+        "documento": "Doc-4 del Empleado-3",
+        "prioridad": 1,
+        "hora_impresion": "2026-02-20 19:33:20"
+    },
+    {
+        "impresora": "Impresora-1",
+        "documento": "Doc-3 del Empleado-1",
+        "prioridad": 2,
+        "hora_impresion": "2026-02-20 19:33:22"
+    },
+    {
+        "impresora": "Impresora-2",
+        "documento": "Doc-4 del Empleado-1",
+        "prioridad": 2,
+        "hora_impresion": "2026-02-20 19:33:26"
+    },
+    {
+        "impresora": "Impresora-1",
+        "documento": "Doc-5 del Empleado-1",
+        "prioridad": 2,
+        "hora_impresion": "2026-02-20 19:33:27"
+    },
+    {
+        "impresora": "Impresora-2",
+        "documento": "Doc-5 del Empleado-2",
+        "prioridad": 2,
+        "hora_impresion": "2026-02-20 19:33:28"
+    },
+    {
+        "impresora": "Impresora-1",
+        "documento": "Doc-1 del Empleado-3",
+        "prioridad": 3,
+        "hora_impresion": "2026-02-20 19:33:29"
+    },
+    {
+        "impresora": "Impresora-1",
+        "documento": "Doc-2 del Empleado-2",
+        "prioridad": 3,
+        "hora_impresion": "2026-02-20 19:33:30"
+    },
+    {
+        "impresora": "Impresora-2",
+        "documento": "Doc-2 del Empleado-3",
+        "prioridad": 3,
+        "hora_impresion": "2026-02-20 19:33:35"
+    },
+    {
+        "impresora": "Impresora-1",
+        "documento": "Doc-3 del Empleado-3",
+        "prioridad": 3,
+        "hora_impresion": "2026-02-20 19:33:36"
+    },
+    {
+        "impresora": "Impresora-2",
+        "documento": "Doc-4 del Empleado-2",
+        "prioridad": 3,
+        "hora_impresion": "2026-02-20 19:33:37"
+    },
+    {
+        "impresora": "Impresora-1",
+        "documento": "Doc-5 del Empleado-3",
+        "prioridad": 3,
+        "hora_impresion": "2026-02-20 19:33:38"
+    }
+]
